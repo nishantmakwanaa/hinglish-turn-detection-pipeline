@@ -1,2 +1,6 @@
-# ai-turn-detection
-Audio turn detection for Hinglish voice AI using Whisper Tiny, dual-branch CNN, and prosodic features.
+# TurnSense: Audio Turn Detection for Voice AI
+
+- Built an audio-only turn-detection model for Hinglish voice agents Whisper Tiny encoder with a dual-branch CNN (global attention-pooled context + trailing-2s window) hitting 93.5% F1 (94.4% on Hindi) on a held-out test split, letting the agent decide when to respond before STT runs, keeping ASR latency off the critical path.
+- Engineered a resumable, constant-memory ingestion pipeline over a 41 GB / 271K-clip HuggingFace dataset, streaming Parquet row-group by row-group to curate 32K Hindi + English clips (16 kHz, 8s right-aligned windows) on free-tier Colab without holding a shard in RAM.
+- Made the model robust to filler words ("umm", "matlab", "toh") via multi-task auxiliary heads (mid-filler / end-filler) plus 5 hand-engineered prosodic features (energy decay, F0 slope, speech-activity ratio), training a 9M-param model (4.4M trainable) with focal loss; shipped a Gradio mic demo for live validation.
+- interrupting a user mid-sentence is the 1 thing that makes a voice agent feel broken — it drives drop-offs and repeat calls. Getting this right on Hinglish matters because English-centric turn models over-fire on Indic speech (smart-turn v3 has an 8.57% false-turn-end rate on Hindi vs 4.73% overall), so it's a real, underserved gap in the Indian voice-AI market.
