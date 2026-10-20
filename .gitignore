@@ -46,6 +46,7 @@ smart_turn/checkpoints/
 
 # Raw audio files and cached downloads
 *.wav
+*.mov
 *.mp3
 *.flac
 audio/
