@@ -33,21 +33,35 @@ An audio-only turn-detection model for **Hinglish (Hindi + English)** voice agen
 ## 📁 Repository Structure
 
 ```text
-ai-turn-detection/
+hinglish-turn-detection-pipeline/
+├── configs/
+│   └── default.yaml                     # Default data, model, training, and inference config
+├── src/
+│   ├── __init__.py                      # Public package exports
+│   ├── model.py                         # WhisperTurnDetector, AttentionPool, FocalLoss
+│   ├── prosodic.py                      # 5 prosodic scalar features, resampling, 8s windowing
+│   ├── dataset.py                       # TurnDataset & DataLoader builders
+│   ├── train.py                         # Mixed-precision training & evaluation loop
+│   └── inference.py                     # TurnDetector real-time inference & Gradio demo
+├── scripts/
+│   ├── download_data.py                 # Resumable Parquet row-group streaming data curation
+│   ├── train.py                         # CLI training launcher
+│   └── infer.py                         # CLI file inference & Gradio mic demo launcher
 ├── notebook/
-│   └── hinglish_audiotd.ipynb          # End-to-end training & Gradio mic demo
+│   └── hinglish_audiotd.ipynb           # End-to-end Colab training & Gradio mic demo
 ├── data/
 │   └── manifest.csv                     # Stratified dataset manifest
 ├── Hinglish_Turn_Detection_Report.pdf   # Complete research report
 ├── training_history.csv                 # Per-epoch training metrics
 ├── requirements.txt                     # Pinned dependencies
 ├── .gitignore                           # Git ignore rules
+├── LICENSE                              # MIT license
 └── README.md                            # Project documentation
 ```
 
 ---
 
-## 🛠️ Quickstart
+## 🛠️ Quickstart & CLI Usage
 
 ```bash
 # 1. Clone repository & install dependencies
@@ -55,6 +69,16 @@ git clone https://github.com/nishantmakwanaa/ai-turn-detection.git
 cd ai-turn-detection
 pip install -r requirements.txt
 
-# 2. Run training or demo in notebook/hinglish_audiotd.ipynb
+# 2. Stream and curate 16 kHz, 8s right-aligned Hindi & English clips (resumable)
+python scripts/download_data.py --config configs/default.yaml
+
+# 3. Train the model using configs/default.yaml (or override hyperparameters via CLI)
+python scripts/train.py --config configs/default.yaml --epochs 3 --batch-size 16
+
+# 4. Run inference on audio files or launch the interactive Gradio mic demo
+python scripts/infer.py --checkpoint smart_turn/checkpoints/best_model.pt --audio path/to/clip.wav
+python scripts/infer.py --checkpoint smart_turn/checkpoints/best_model.pt --demo
+
+# Alternatively, run the end-to-end Colab notebook:
 jupyter notebook notebook/hinglish_audiotd.ipynb
 ```

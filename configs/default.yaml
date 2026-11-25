@@ -1,0 +1,45 @@
+# TurnSense default configuration (matches notebook/hinglish_audiotd.ipynb)
+seed: 42
+
+data:
+  dataset_id: "pipecat-ai/smart-turn-data-v3.2-train"
+  languages:
+    - "hin"
+    - "eng"
+  per_language_cap: 20000
+  target_sr: 16000
+  fixed_window_seconds: 8.0
+  work_dir: "smart_turn"
+  audio_dir: "smart_turn/audio"
+  manifest_path: "smart_turn/manifest.jsonl"
+  csv_manifest_path: "smart_turn/manifest.csv"
+  shards_dir: "smart_turn/shards"
+  cache_dir: "smart_turn/cache"
+  test_size: 0.10
+  val_size: 0.10
+
+model:
+  whisper_model_id: "openai/whisper-tiny"
+  n_unfrozen_encoder_layers: 2
+  turn_end_frames: 100
+  dropout: 0.1
+
+training:
+  output_dir: "smart_turn/checkpoints"
+  epochs: 3
+  batch_size: 16
+  grad_accum_steps: 2
+  lr: 3.0e-5
+  weight_decay: 0.01
+  aux_weight: 0.2
+  focal_gamma: 2.0
+  num_workers: 0
+
+inference:
+  checkpoint_path: "smart_turn/checkpoints/best_model.pt"
+  threshold: 0.5
+  device: "auto"
+  demo:
+    share: false
+    server_name: "127.0.0.1"
+    server_port: 7860
